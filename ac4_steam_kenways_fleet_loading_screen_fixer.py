@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 """AC4 Steam Fixer
+Make sure to install any version of python 3
 
-Simply run the script, and it will step you through what to do.
-Only works on STEAM version of AC4.
+Run the script, and it will step you through what to do.
+Only works on STEAM version of AC4 on Windows.
 """
-
 import os
 import shutil
-import urllib.request
+import subprocess
+import time
 
 def find_game_path():
     """
@@ -39,7 +40,7 @@ def apply_fix():
     # Define file paths
     original_exe = os.path.join(game_path, 'AC4BFSP.exe')
     backup_exe = os.path.join(game_path, 'AC4BFSP_original_backup.exe')
-
+    
     # Path to the old executable downloaded from Steam Depot
     steam_content_path = os.path.join(os.path.dirname(os.path.dirname(game_path)), 'content', 'app_242050', 'depot_242051')
     temp_fix_file = os.path.join(steam_content_path, 'AC4BFSP.exe')
@@ -60,21 +61,29 @@ def apply_fix():
             print(f"Error creating backup: {e}")
             return
 
-    # 2. Instruct the user to download the depot using the Steam console
-    print("\nIMPORTANT: This script requires a manual step.")
-    print("Opening Steam console automatically...")
-    os.system("start steam://open/console")
+    # 2. Combined instruction for user to download the depot using the Steam console
+    print("\nIMPORTANT: Please follow the next steps carefully to apply the fix.")
+    print("This script will automatically open the Steam console for you.")
+    input("Press ENTER or RETURN to continue")
 
-    print("\n1. A Steam console window has just opened. Go to that window.")
+    # Automatically opens the Steam console
+    subprocess.run(["start", "steam://open/console"], shell=True)
+    
+    # Combined instructions for the user
+    print("\n1. The Steam console window has just opened. Go to that window.")
     print("2. Copy the following command and paste it into the console:")
     print("   download_Depot 242050 242051 7598860626606919774")
-    print("3. Press Enter to start the download.")
-    print(f"\nThe depot will download to: {steam_content_path}")
-    input("\nPress Enter to continue once the download is complete.")
+    print("3. Press Enter to start the download. This may take a few minutes.")
+    input("\nPress ENTER or RETURN to continue after the download has started.")
 
+    print("Waiting for 30 seconds for the download to complete...")
+    time.sleep(30)
+
+    print(f"4. The depot will download to: C:\\Program Files (x86)\\Steam\\steamapps\\content\\app_242050\\depot_242051")
+    
     if not os.path.exists(temp_fix_file):
         print(f"Error: The downloaded fix file '{temp_fix_file}' was not found.")
-        print("Please ensure you have performed the Steam console steps correctly.")
+        print("Please ensure you have performed the Steam console steps correctly and the file exists.")
         return
 
     # 3. Replace the original file with the new one
@@ -90,5 +99,7 @@ def apply_fix():
     print("A backup of the original executable is located at:")
     print(backup_exe)
 
+    input("\nPress ENTER or RETURN to Exit")
+    
 if __name__ == '__main__':
     apply_fix()
